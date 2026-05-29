@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, HTTPException
 
 from schemas import SpreadsheetConfigRequest
@@ -5,6 +6,11 @@ from database.spreadsheet_configs_table import (
     get_spreadsheet_config, 
     upsert_spreadsheet_config, 
     delete_spreadsheet_config
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 router = APIRouter()
@@ -24,8 +30,8 @@ def insert(data: SpreadsheetConfigRequest):
             "sheet_name": data.sheet_name
         }
 
-    except Exception as e:
-        # logging.exception(f"Error inserting/updating spreadsheet config: {str(e)}")
+    except Exception:
+        logging.exception(f"Error inserting/updating spreadsheet config")
         raise HTTPException(
             status_code=500,
             detail="Internal server error"
@@ -43,8 +49,8 @@ def get_spreadsheet_config(telegram_id: str):
         return spreadsheet_config
     except HTTPException:
         raise
-    except Exception as e:
-        # logging.exception(f"Error retrieving spreadsheet config: {str(e)}")
+    except Exception:
+        logging.exception(f"Error retrieving spreadsheet config")
         raise HTTPException(
             status_code=500,
             detail="Internal server error"
@@ -67,8 +73,8 @@ def delete_config(telegram_id: str):
         }
     except HTTPException:
         raise
-    except Exception as e:
-        # logging.exception(f"Error deleting spreadsheet config: {str(e)}")
+    except Exception:
+        logging.exception(f"Error deleting spreadsheet config")
         raise HTTPException(
             status_code=500,
             detail="Internal server error"

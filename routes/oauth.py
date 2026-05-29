@@ -1,3 +1,4 @@
+import logging
 import requests
 
 from fastapi import APIRouter, Request
@@ -19,6 +20,11 @@ from database.oauth_states_table import (
     get_oauth_states_data, 
     delete_oauth_state,
     insert_oauth_state
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 router = APIRouter()
@@ -76,8 +82,8 @@ def oauth_callback(request: Request, state: str, code: str):
         )
         delete_oauth_state(state)
 
-    except Exception as e:
-        # logging.exception(f"Error saving OAuth tokens: {str(e)}")
+    except Exception:
+        logging.exception(f"Error saving OAuth tokens")
         raise HTTPException(status_code=500, detail="Failed to save OAuth tokens")
 
     return Response(
@@ -238,8 +244,8 @@ def get_status_google(telegram_id: str):
     except HTTPException:
         raise
 
-    except Exception as e:
-        # logging.exception(f"Error fetching token status: {str(e)}")
+    except Exception:
+        logging.exception(f"Error fetching token status")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error"
@@ -250,8 +256,8 @@ def insert_states(data: OAuthStateRequest):
         insert_oauth_state(data.telegram_id, data.state)
         return {"status": "ok"}
     
-    except Exception as e:
-        # logging.exception("Error inserting OAuth state: %s", str(e))
+    except Exception:
+        logging.exception(f"Error inserting OAuth state")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error"

@@ -1,5 +1,11 @@
+import logging
 import psycopg
 import config
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 def get_conn():
     try:
@@ -12,7 +18,7 @@ def get_conn():
         )
         return conn
     except psycopg.Error as e:
-        # logging.exception("Database connection error")
+        logging.exception("Database connection error")
         raise Exception("Database connection error") from e
 
 def main():

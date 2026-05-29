@@ -1,4 +1,4 @@
-# import logging
+import logging
 
 from fastapi import APIRouter, HTTPException
 
@@ -8,6 +8,11 @@ from database.users_table import (
     stop_user_data
 )
 from schemas import User
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 router = APIRouter()
 
@@ -27,8 +32,8 @@ def get_user_data(telegram_id: str):
     except HTTPException:
         raise
 
-    except Exception as e:
-        # logging.exception(f"Error fetching user data: {str(e)}")
+    except Exception:
+        logging.exception(f"Error fetching user data")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error"
@@ -54,8 +59,8 @@ def upsert(user: User):
 
         return {"status": "ok", "state": state}
     
-    except Exception as e:
-        # logging.exception(f"Error inserting user data: {str(e)}")
+    except Exception:
+        logging.exception(f"Error inserting user data")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error"
@@ -80,8 +85,8 @@ def stop(telegram_id: str):
     
     except HTTPException:
         raise
-    except Exception as e:
-        # logging.exception(f"Error stopping user: {str(e)}")
+    except Exception:
+        logging.exception(f"Error stopping user data")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error"
