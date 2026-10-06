@@ -38,7 +38,7 @@ def insert(data: SpreadsheetConfigRequest):
         )
 
 @router.get("/{telegram_id}")
-def get_spreadsheet_config(telegram_id: str):
+def get_config(telegram_id: str):
     try:
         spreadsheet_config = get_spreadsheet_config(telegram_id)
         if spreadsheet_config is None:
