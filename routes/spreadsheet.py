@@ -23,6 +23,7 @@ def insert(data: SpreadsheetConfigRequest):
             spreadsheet_id=data.spreadsheet_id,
             sheet_name=data.sheet_name
         )
+
         return {
             "status": "success",
             "message": "Spreadsheet config saved successfully",
@@ -47,8 +48,10 @@ def get_config(telegram_id: str):
                 detail="Spreadsheet config not found for this user"
             )
         return spreadsheet_config
+    
     except HTTPException:
         raise
+
     except Exception:
         logging.exception(f"Error retrieving spreadsheet config")
         raise HTTPException(
@@ -71,8 +74,10 @@ def delete_config(telegram_id: str):
             "status": "success",
             "message": "Spreadsheet config deleted successfully"
         }
+    
     except HTTPException:
         raise
+    
     except Exception:
         logging.exception(f"Error deleting spreadsheet config")
         raise HTTPException(
