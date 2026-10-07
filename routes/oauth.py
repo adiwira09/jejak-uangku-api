@@ -217,7 +217,7 @@ def oauth_callback(request: Request, state: str, code: str):
             <p class="hint">
                 Setelah kembali ke Telegram, tekan
                 <strong>“Saya Sudah Login”</strong>
-                untuk melanjutkan.
+                untuk melanjutkan
             </p>
         </main>
     </body>
