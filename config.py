@@ -4,9 +4,11 @@ from dotenv import load_dotenv
 APP_ENV = os.getenv("APP_ENV", "development")
 
 if APP_ENV == "production":
-    load_dotenv(".env.prod")
-else:
+    load_dotenv(".env")
+elif APP_ENV == "development":
     load_dotenv(".env.dev")
+else:
+    raise ValueError(f"Invalid APP_ENV value: {APP_ENV}")
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
