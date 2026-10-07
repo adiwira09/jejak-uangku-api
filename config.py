@@ -5,8 +5,12 @@ APP_ENV = os.getenv("APP_ENV", "development")
 
 if APP_ENV == "production":
     load_dotenv(".env")
+    print("Running in production mode")
+
 elif APP_ENV == "development":
     load_dotenv(".env.dev")
+    print("Running in development mode")
+    
 else:
     raise ValueError(f"Invalid APP_ENV value: {APP_ENV}")
 
