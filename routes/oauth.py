@@ -63,7 +63,8 @@ def oauth_callback(request: Request, state: str, code: str):
         token = response.json()
 
     except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Request to Google failed: {str(e)}")
+        logging.exception(f"Request to Google failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Request to Google failed")
     
     access_token = token.get("access_token")
     refresh_token = token.get("refresh_token")
@@ -86,156 +87,155 @@ def oauth_callback(request: Request, state: str, code: str):
         logging.exception(f"Error saving OAuth tokens")
         raise HTTPException(status_code=500, detail="Failed to save OAuth tokens")
 
-    return Response(
-        content="""
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Berhasil</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-        .card {
-            background: #ffffff;
-            padding: 40px 30px;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-        .icon-success {
-            width: 64px;
-            height: 64px;
-            background-color: #e6f7ed;
-            color: #2ec4b6;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            font-size: 32px;
-            font-weight: bold;
-        }
-        h2 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #1a1a1a;
-        }
-        p {
-            font-size: 15px;
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 8px;
-        }
-        .highlight {
-            color: #0088cc;
-            font-weight: 600;
-        }
-        .timer-container {
-            margin: 32px 0 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        /* Animasi lingkaran timer 3 detik */
-        .countdown-circle {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f0f0f0;
-            border-top: 3px solid #0088cc;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .btn-telegram {
-            display: inline-block;
-            width: 100%;
-            background-color: #0088cc;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            transition: background-color 0.2s;
-            margin-top: 10px;
-        }
-        .btn-telegram:active {
-            background-color: #006699;
-        }
-    </style>
-</head>
-<body>
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+        <meta charset="UTF-8">
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        >
 
-    <div class="card">
-        <div class="icon-success">✓</div>
-        
-        <h2>Login Berhasil</h2>
-        <p>Akun Google Anda telah terhubung dengan <span class="highlight">Jejak Uangku</span>.</p>
-        
-        <div class="timer-container">
-            <div class="countdown-circle"></div>
-            <p style="font-size: 13px; color: #999;">Mengalihkan kembali ke Telegram dalam <span id="countdown">3</span> detik...</p>
-        </div>
+        <title>Jejak Uangku</title>
 
-        <a href="tg://resolve?domain=jejak_uangku_bot" class="btn-telegram">Kembali ke Telegram</a>
-    </div>
-
-    <script>
-        let seconds = 3;
-        const countdownEl = document.getElementById('countdown');
-        const telegramUrl = "tg://resolve?domain=jejak_uangku_bot";
-
-        const interval = setInterval(() => {
-            seconds--;
-            countdownEl.textContent = seconds;
-            
-            if (seconds <= 0) {
-                clearInterval(interval);
-                window.location.href = telegramUrl;
+        <style>
+            * {
+                box-sizing: border-box;
             }
-        }, 1000);
 
-        // Trigger redirect instan saat page load selesai diluar info text pembantu
-        setTimeout(() => {
-            window.location.href = telegramUrl;
-        }, 3000);
-    </script>
+            body {
+                margin: 0;
+                min-height: 100vh;
 
-</body>
-</html>
-""",
-media_type="text/html",
-status_code=200
-    )  
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                padding: 24px;
+
+                background: #f7f8fa;
+                color: #171717;
+
+                font-family:
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    Helvetica,
+                    Arial,
+                    sans-serif;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 400px;
+
+                padding: 32px;
+
+                background: #ffffff;
+
+                border: 1px solid #e5e7eb;
+                border-radius: 16px;
+
+                text-align: center;
+            }
+
+            h1 {
+                margin: 0;
+
+                font-size: 24px;
+                line-height: 1.3;
+                font-weight: 650;
+
+                letter-spacing: -0.3px;
+            }
+
+            .description {
+                margin: 12px 0 0;
+
+                color: #6b7280;
+
+                font-size: 15px;
+                line-height: 1.6;
+            }
+
+            .button {
+                display: block;
+
+                width: 100%;
+
+                margin-top: 28px;
+                padding: 13px 16px;
+
+                border-radius: 10px;
+
+                background: #229ed9;
+                color: #ffffff;
+
+                font-size: 15px;
+                font-weight: 600;
+
+                text-decoration: none;
+
+                transition: background-color 0.15s ease;
+            }
+
+            .button:hover {
+                background: #168dcc;
+            }
+
+            .hint {
+                margin: 16px 0 0;
+
+                color: #9ca3af;
+
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            @media (max-width: 480px) {
+                body {
+                    padding: 16px;
+                }
+
+                .card {
+                    padding: 28px 22px;
+                }
+
+                h1 {
+                    font-size: 22px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="card">
+            <h1>Google Berhasil Terhubung</h1>
+            <p class="description">Akun Google Anda berhasil terhubung dengan Jejak Uangku</p>
+            <a class="button" href="https://t.me/jejak_uangku_bot">Kembali ke Telegram</a>
+            <p class="hint">
+                Setelah kembali ke Telegram, tekan
+                <strong>“Saya Sudah Login”</strong>
+                untuk melanjutkan
+            </p>
+        </main>
+    </body>
+    </html>
+    """
+
+    return Response(
+        content=html_content,
+        media_type="text/html",
+        status_code=200
+    )
     
 @router.get("/token/status/{telegram_id}")
 def get_status_google(telegram_id: str):
     try:
         data = get_oauth_tokens_data(telegram_id)
         if data is None:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(status_code=404, detail="Google account not connected")
 
         return {
             "telegram_id": telegram_id,
@@ -250,6 +250,7 @@ def get_status_google(telegram_id: str):
             status_code=500,
             detail=f"Internal server error"
         )
+    
 @router.post("/states/insert")
 def insert_states(data: OAuthStateRequest):
     try:

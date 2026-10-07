@@ -85,6 +85,7 @@ def stop(telegram_id: str):
     
     except HTTPException:
         raise
+    
     except Exception:
         logging.exception(f"Error stopping user data")
         raise HTTPException(
